@@ -7,7 +7,6 @@ const generateToken = (userId) => {
 const verifyToken = (token) => {
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    console.log(decoded);
     return decoded.user;
   } catch (error) {
     console.log(error);
@@ -23,7 +22,6 @@ const authenticateToken = (req, res, next) => {
 
   const token = authHeader.split(' ')[1];
   const userId = verifyToken(token);
-  console.log(userId);
   if (!userId) {
     return res.status(403).json({ message: 'Forbidden' });
   }

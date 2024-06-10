@@ -27,10 +27,14 @@ const Chat = (props) => {
       setMessages((prevMessages) => [...prevMessages, message]);
     });
 
+    socket.current.emit('joinRoom', 'room1');
+
     const fetchMessages = async () => {
-      const res = await axios.get(`http://localhost:5000/api/chat/messages/room1`, {headers: {
-        'Authorization': `Bearer ${token}`, // Pass the token in the headers
-      }});
+      const res = await axios.get(`http://localhost:5000/api/chat/messages/room1`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
+      });
       setMessages(res.data);
     };
 
@@ -44,23 +48,22 @@ const Chat = (props) => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (newMessage.trim() === '' && !file) {
-      return; // Don't send empty messages
+      return;
     }
-  
-    const token = localStorage.getItem('token'); // Retrieve the token from localStorage
-  
+
+    const token = localStorage.getItem('token');
     if (file) {
       const formData = new FormData();
       formData.append('image', file);
       formData.append('roomId', 'room1');
-      formData.append('userId', user._id); // Include the userId
-      formData.append('textContent', newMessage)
-  
+      formData.append('userId', user._id);
+      formData.append('textContent', newMessage);
+
       try {
         await axios.post(`http://localhost:5000/api/chat/message`, formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`, // Pass the token in the headers
+            'Authorization': `Bearer ${token}`,
           }
         });
         setFile(null);
@@ -71,12 +74,12 @@ const Chat = (props) => {
       const messageData = {
         roomId: 'room1',
         textContent: newMessage,
-        userId: user._id, // Include the userId
+        userId: user._id,
       };
       try {
         await axios.post(`http://localhost:5000/api/chat/message`, messageData, {
           headers: {
-            'Authorization': `Bearer ${token}`, // Pass the token in the headers
+            'Authorization': `Bearer ${token}`,
           }
         });
       } catch (error) {
@@ -85,7 +88,6 @@ const Chat = (props) => {
     }
     setNewMessage('');
   };
-  
 
   return (
     <div>

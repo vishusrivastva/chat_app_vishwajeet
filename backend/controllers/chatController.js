@@ -1,5 +1,5 @@
 const Message = require('../models/message');
-const {encryptMessage, decryptMessage } = require('../utils/encryption');
+const { encryptMessage, decryptMessage } = require('../utils/encryption');
 const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
@@ -36,8 +36,8 @@ exports.sendMessage = async (req, res) => {
     let imageURL = null;
     if (req.file) {
       const imagePath = `uploads/${req.file.filename}`; // Assuming uploads folder stores images
-      // imageURL = `${process.env.BASE_URL}${imagePath}/`; // Construct the image URL based on your server configuration
-      imageURL  = req.file.path
+      imageURL = process.env.BASE_URL + imagePath; // Construct the image URL based on your server configuration
+
       // You can also save the image path to a database field if needed
     }
 
@@ -49,6 +49,16 @@ exports.sendMessage = async (req, res) => {
     });
     await newMessage.save();
 
+    // Emit the message to all clients in the room
+    const io = req.app.get('io');
+    io.to(roomId).emit('message', {
+      roomId,
+      sender: userId,
+      textContent: decryptMessage(newMessage.textContent),
+      imageContent: imageURL,
+      timestamp: newMessage.timestamp,
+    });
+
     res.status(201).json({ message: 'Message sent successfully', newMessage });
   } catch (error) {
     console.error('Error sending message', error);
@@ -56,12 +66,10 @@ exports.sendMessage = async (req, res) => {
   }
 };
 
-
 exports.getMessages = async (req, res) => {
   try {
     const { roomId } = req.params;
     const messages = await Message.find({ roomId }).populate('sender', 'username').sort({ timestamp: 1 });
-    console.log(messages);
     const decryptedMessages = messages.map((msg) => ({
       id: msg._id,
       textContent: decryptMessage(msg.textContent), // Ensure correct decryption
