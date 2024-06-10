@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
+import '../styles/Chat.css';
 
 const Chat = (props) => {
   const [messages, setMessages] = useState([]);
@@ -8,6 +9,7 @@ const Chat = (props) => {
   const [file, setFile] = useState(null);
   const [user, setUser] = useState({});
   const socket = useRef(null);
+  const messagesEndRef = useRef(null);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
@@ -36,6 +38,7 @@ const Chat = (props) => {
         }
       });
       setMessages(res.data);
+      scrollToBottom();
     };
 
     fetchMessages();
@@ -44,6 +47,14 @@ const Chat = (props) => {
       socket.current.disconnect();
     };
   }, [newMessage]);
+
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
@@ -90,20 +101,27 @@ const Chat = (props) => {
   };
 
   return (
-    <div>
+    <div className="chat-container">
       <h2>Chat Room</h2>
-      <div>
+      <div className="messages-container">
         {messages.map((message, index) => (
-          <div key={index}>
-            {message.imageContent ? (
-              <img src={`${process.env.REACT_APP_API_URL}${message.imageContent}`} alt="Sent" style={{ width: '200px' }} />
-            ) : (
-              <p>{message.textContent}</p>
-            )}
+          <div key={index} className={`message-box ${message.sender === user.username ? 'right' : 'left'}`}>
+            <div className="message-content">
+              {message.imageContent ? (
+                <img src={`${process.env.REACT_APP_API_URL}${message.imageContent}`} alt="Sent" style={{ width: '200px' }} />
+              ) : (
+                <p>{message.textContent}</p>
+              )}
+            </div>
+            <div className="message-meta">
+              <span className="username">{message.sender}</span>
+              <span className="timestamp">{new Date(message.timestamp).toLocaleString()}</span>
+            </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
-      <form onSubmit={handleSendMessage}>
+      <form onSubmit={handleSendMessage} className="message-form">
         <input
           type="text"
           placeholder="Type a message"

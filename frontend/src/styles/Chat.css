@@ -1,0 +1,87 @@
+/* src/styles/Chat.css */
+
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 100%;
+  }
+  
+  .messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .message-box {
+    margin: 10px 0;
+    padding: 10px;
+    border-radius: 10px;
+    max-width: 50%;
+    word-wrap: break-word;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .message-box.left {
+    align-self: flex-start;
+    background-color: #e6e6e6;
+  }
+  
+  .message-box.right {
+    align-self: flex-end;
+    background-color: #d1e7dd;
+  }
+  
+  .message-content img {
+    max-width: 100%;
+    border-radius: 10px;
+  }
+  
+  .message-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8em;
+    color: #555;
+    margin-top: 5px;
+  }
+
+  .username {
+    margin-right: 10px; /* Add some margin to the right of the username */
+  }
+  
+  .message-form {
+    display: flex;
+    padding: 10px;
+    background-color: #fff;
+    border-top: 1px solid #ccc;
+  }
+  
+  .message-form input[type="text"] {
+    flex: 1;
+    padding: 10px;
+    margin-right: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .message-form input[type="file"] {
+    margin-right: 10px;
+  }
+  
+  .message-form button {
+    padding: 10px 20px;
+    border: none;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .message-form button:hover {
+    background-color: #0056b3;
+  }
+  
