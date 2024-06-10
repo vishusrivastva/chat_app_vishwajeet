@@ -2,11 +2,10 @@ import React, { useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
-const Login = (props) => {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const history = useHistory();
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -15,11 +14,8 @@ const Login = (props) => {
       const { token, user } = response.data; // Extract user data from response
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user)); // Save user data to localStorage
-      history.push('/chat')
-
-      props.onLogin(user); // Call onLogin with user data
-      history.push('/chat')
-
+      
+      history.push('/chat');
     } catch (error) {
       console.error('Login error:', error);
     }
@@ -28,10 +24,10 @@ const Login = (props) => {
   return (
     <div>
       <h2>Login</h2>
-      <form>
+      <form onSubmit={handleSubmit}>
         <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password"  placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        <button type="submit" onClick={handleSubmit}>Login</button>
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+        <button type="submit">Login</button>
       </form>
       <p>
         Don't have an account? <Link to="/register">Register</Link>

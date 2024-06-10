@@ -1,20 +1,22 @@
 import React, { useState, useEffect, useRef } from 'react';
 import io from 'socket.io-client';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 import '../styles/Chat.css';
 
-const Chat = (props) => {
+const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [file, setFile] = useState(null);
   const [user, setUser] = useState({});
   const socket = useRef(null);
   const messagesEndRef = useRef(null);
+  const history = useHistory();
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) {
-      window.location.href = '/login';
+      history.push('/login');
       return;
     }
 
@@ -100,9 +102,20 @@ const Chat = (props) => {
     setNewMessage('');
   };
 
+  const handleLogoutClick = async () => {
+    try {
+      localStorage.removeItem('token');
+      localStorage.removeItem('user')
+      history.push('/login');
+    } catch (error) {
+      console.error('Logout error:', error);
+    }
+  };
+
   return (
     <div className="chat-container">
       <h2>Chat Room</h2>
+      <button onClick={handleLogoutClick}>Logout</button>
       <div className="messages-container">
         {messages.map((message, index) => (
           <div key={index} className={`message-box ${message.sender === user.username ? 'right' : 'left'}`}>
@@ -115,6 +128,7 @@ const Chat = (props) => {
             </div>
             <div className="message-meta">
               <span className="username">{message.sender}</span>
+              <span>&nbsp;</span>
               <span className="timestamp">{new Date(message.timestamp).toLocaleString()}</span>
             </div>
           </div>
